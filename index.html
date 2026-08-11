@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SHIFT is a market-adaptive platform for identifying high-demand, low-competition opportunities.">
-  <title>SHIFT | Market Adaptive Platform</title>
+  <meta name="description" content="SHIFT Pre-Flight is a free launch-readiness scanner for app developers: automated safety, legal-compliance, and store-listing checks that run entirely in your browser.">
+  <meta name="theme-color" content="#0d0d12">
+  <title>SHIFT Pre-Flight | Launch Readiness Scanner</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
     :root {
       color-scheme: dark;
@@ -18,6 +22,9 @@
       --quiet: #707080;
       --cyan: #00c6ff;
       --blue: #0072ff;
+      --red: #ff5d6c;
+      --amber: #ffc555;
+      --green: #42d392;
       --radius: 16px;
     }
 
@@ -33,15 +40,12 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    button, input { font: inherit; }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-    }
+    button, input, textarea { font: inherit; }
 
     .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -52,11 +56,7 @@
       backdrop-filter: blur(16px);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
 
     .logo {
       background: linear-gradient(90deg, var(--cyan), var(--blue));
@@ -76,64 +76,32 @@
       padding: 5px 10px;
     }
 
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
+    .status { display: flex; align-items: center; gap: 7px; }
 
     .status::before {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #42d392;
-      box-shadow: 0 0 12px #42d392;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
       content: "";
     }
 
-    .tabs {
-      display: flex;
-      gap: 3px;
-      padding: 15px clamp(18px, 4vw, 32px) 0;
-    }
-
-    .tab {
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-bottom: 0;
-      border-radius: 9px 9px 0 0;
-      background: transparent;
-      color: var(--quiet);
-    }
-
-    .tab.active {
-      border-color: #2a2a35;
-      background: var(--panel);
-      color: white;
-    }
-
     .main {
-      margin: 0 clamp(18px, 4vw, 32px);
-      padding: clamp(28px, 6vw, 64px) 20px;
-      border: 1px solid #2a2a35;
-      border-radius: 0 0 14px 14px;
-      background: rgba(30, 30, 42, .82);
-      overflow-y: auto;
-    }
-
-    .content {
-      width: min(100%, 720px);
-      margin: auto;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px) 40px;
     }
 
     .card {
       position: relative;
-      padding: clamp(28px, 6vw, 52px);
+      padding: clamp(22px, 4.5vw, 40px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: linear-gradient(145deg, #252535, var(--panel-deep));
       box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
       overflow: hidden;
+      margin-bottom: 24px;
     }
 
     .card::before {
@@ -150,13 +118,13 @@
       background: linear-gradient(90deg, var(--cyan), var(--blue));
       background-clip: text;
       color: transparent;
-      font-size: clamp(2.25rem, 8vw, 4rem);
+      font-size: clamp(2rem, 7vw, 3.2rem);
       letter-spacing: -.04em;
-      line-height: 1;
+      line-height: 1.05;
     }
 
-    h2 {
-      margin: 0 0 30px;
+    h2.tagline {
+      margin: 0 0 22px;
       color: var(--muted);
       font-size: .9rem;
       font-weight: 500;
@@ -164,109 +132,250 @@
       text-transform: uppercase;
     }
 
-    p {
-      margin: 0 0 18px;
+    .intro p {
+      margin: 0 0 14px;
       color: #c8c8d5;
-      font-size: clamp(1rem, 2.5vw, 1.08rem);
-      line-height: 1.75;
+      font-size: clamp(.98rem, 2.4vw, 1.05rem);
+      line-height: 1.7;
     }
 
-    p:last-child { margin-bottom: 0; }
+    .intro p:last-child { margin-bottom: 0; }
     .highlight { color: var(--cyan); font-weight: 650; }
 
-    .conversation {
+    .pillars {
       display: grid;
-      gap: 10px;
-      margin-top: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
     }
 
-    .message {
-      max-width: 88%;
-      padding: 11px 14px;
+    .pillar {
+      padding: 14px 16px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      color: #d0d0dc;
-      font-size: .92rem;
-      line-height: 1.5;
+      background: rgba(255, 255, 255, .03);
+      font-size: .88rem;
+      line-height: 1.55;
+      color: var(--muted);
     }
 
-    .message.user {
-      justify-self: end;
-      border-color: rgba(0, 114, 255, .55);
-      background: rgba(0, 114, 255, .16);
-    }
+    .pillar strong { display: block; color: var(--text); margin-bottom: 4px; }
 
-    .message.system { background: rgba(255, 255, 255, .035); }
-
-    .footer {
-      padding: 18px clamp(18px, 4vw, 32px) 26px;
-    }
-
-    .composer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 900px;
-      margin: auto;
-      padding: 8px 9px 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, .24);
-    }
-
-    .composer:focus-within { border-color: var(--blue); }
-
-    .composer input {
-      min-width: 0;
-      flex: 1;
-      padding: 9px;
+    fieldset {
+      margin: 0 0 18px;
+      padding: 0;
       border: 0;
-      outline: 0;
-      background: transparent;
-      color: white;
     }
 
-    .composer input::placeholder { color: var(--quiet); }
+    label.field-label {
+      display: block;
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .hint { color: var(--quiet); font-size: .78rem; margin: 6px 0 0; line-height: 1.5; }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--panel);
+      color: white;
+      outline: 0;
+    }
+
+    input[type="text"]:focus, textarea:focus { border-color: var(--blue); }
+    textarea { min-height: 130px; resize: vertical; line-height: 1.5; font-size: .92rem; }
+    textarea.code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .82rem; }
+
+    .char-count { color: var(--quiet); font-size: .74rem; text-align: right; margin-top: 4px; }
+    .char-count.over { color: var(--red); font-weight: 700; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .sample-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+
+    .ghost-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .82rem;
+    }
+
+    .ghost-btn:hover { border-color: var(--blue); color: var(--text); }
 
     .send {
-      padding: 10px 22px;
+      display: block;
+      width: 100%;
+      padding: 14px 22px;
       border: 0;
-      border-radius: 11px;
+      border-radius: 12px;
       background: linear-gradient(90deg, var(--cyan), var(--blue));
       color: white;
       cursor: pointer;
       font-weight: 700;
+      font-size: 1rem;
     }
 
     .send:hover { filter: brightness(1.08); }
     .send:active { transform: translateY(1px); }
+    .send[disabled] { opacity: .6; cursor: wait; }
+
+    .micro-disclaimer {
+      margin: 10px 0 0;
+      color: var(--quiet);
+      font-size: .74rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ---------- Results ---------- */
+
+    #results[hidden] { display: none; }
+
+    .notice-banner {
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 197, 85, .4);
+      border-radius: 12px;
+      background: rgba(255, 197, 85, .08);
+      color: #e6d3a3;
+      font-size: .78rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .notice-banner strong { color: var(--amber); }
+
+    .scores {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .score-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .score-card h3 {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .score-value { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+    .score-value .of { color: var(--quiet); font-size: .9rem; font-weight: 500; }
+    .score-good { color: var(--green); }
+    .score-mid { color: var(--amber); }
+    .score-bad { color: var(--red); }
+
+    .score-bar {
+      height: 5px;
+      margin-top: 10px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .08);
+      overflow: hidden;
+    }
+
+    .score-bar > span { display: block; height: 100%; border-radius: 99px; transition: width .6s ease; }
+    .bar-good { background: var(--green); }
+    .bar-mid { background: var(--amber); }
+    .bar-bad { background: var(--red); }
+
+    .tabs { display: flex; gap: 3px; border-bottom: 1px solid #2a2a35; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .tab {
+      padding: 10px 18px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: var(--quiet);
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .tab.active { border-bottom-color: var(--blue); color: white; }
+    .tab .count {
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 99px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .findings { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+    .finding {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .03);
+      font-size: .88rem;
+      line-height: 1.55;
+      color: #d0d0dc;
+    }
+
+    .finding .sev { flex-shrink: 0; font-weight: 800; font-size: .78rem; padding-top: 2px; white-space: nowrap; }
+    .finding.high { border-color: rgba(255, 93, 108, .45); background: rgba(255, 93, 108, .07); }
+    .finding.high .sev { color: var(--red); }
+    .finding.warn { border-color: rgba(255, 197, 85, .4); background: rgba(255, 197, 85, .06); }
+    .finding.warn .sev { color: var(--amber); }
+    .finding.info .sev { color: var(--cyan); }
+    .finding.pass { border-color: rgba(66, 211, 146, .35); background: rgba(66, 211, 146, .05); }
+    .finding.pass .sev { color: var(--green); }
+    .finding strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+    .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+
+    .footer {
+      padding: 18px clamp(18px, 4vw, 32px) 26px;
+      border-top: 1px solid #2a2a35;
+    }
 
     .footer-info {
       display: flex;
       justify-content: space-between;
-      max-width: 900px;
-      margin: 11px auto 0;
+      max-width: 1060px;
+      margin: 0 auto;
       color: var(--quiet);
       font-size: .72rem;
+      gap: 12px;
     }
 
-    .footer-info a {
-      margin-left: 16px;
-      color: inherit;
-      text-decoration: none;
-    }
-
+    .footer-info a { margin-left: 16px; color: inherit; text-decoration: none; }
     .footer-info a:hover { color: var(--muted); }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .status { display: none; }
-      .tabs { padding-top: 10px; }
-      .tab { padding: 9px 14px; }
-      .main { padding-inline: 12px; }
-      .footer-info { align-items: center; flex-direction: column; gap: 8px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .footer-info { align-items: flex-start; flex-direction: column; gap: 8px; }
       .footer-info a:first-child { margin-left: 0; }
-      .send { padding-inline: 16px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -278,83 +387,615 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="brand">
-        <div class="logo">SHIFT</div>
-        <div class="model-badge">GLM-4.7</div>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">SHIFT</div>
+      <div class="model-badge">Pre-Flight</div>
+    </div>
+    <div class="status">Scanner ready — runs in your browser</div>
+  </header>
+
+  <main class="main">
+    <section class="card intro" aria-labelledby="shift-title">
+      <h1 id="shift-title">Pre-Flight</h1>
+      <h2 class="tagline">Launch readiness scanner for app developers</h2>
+      <p>
+        You finished the code — but are you ready to launch? SHIFT Pre-Flight runs an
+        automated <span class="highlight">launch-readiness audit</span> on your app's
+        configuration and store listing before you submit, catching the mistakes that
+        get apps rejected, flagged, or sued.
+      </p>
+      <p>
+        Paste your <span class="highlight">AndroidManifest.xml</span>, <span class="highlight">Info.plist</span>,
+        or <span class="highlight">package.json</span> plus your store-listing copy. Everything is analyzed
+        locally in your browser — <span class="highlight">nothing is uploaded anywhere</span>.
+      </p>
+      <div class="pillars">
+        <div class="pillar"><strong>1 · Safety audit</strong> Hardcoded keys and secrets, cleartext traffic, debug flags, risky permissions, outdated target SDK.</div>
+        <div class="pillar"><strong>2 · Legal &amp; compliance</strong> Privacy-policy gaps, Play Billing / In-App Purchase rules, COPPA &amp; families flags, permission justification.</div>
+        <div class="pillar"><strong>3 · Store listing (ASO)</strong> Title and description limits, keyword stuffing, trademark risk, banned superlative claims.</div>
       </div>
-      <div class="status">Interface ready</div>
-    </header>
+    </section>
 
-    <nav class="tabs" aria-label="Workspace files">
-      <button class="tab" type="button">HTML</button>
-      <button class="tab active" type="button" aria-current="page">index.html</button>
-    </nav>
+    <section class="card" aria-labelledby="scan-title">
+      <h2 class="tagline" id="scan-title">Run a scan</h2>
 
-    <main class="main">
-      <div class="content">
-        <section class="card" aria-labelledby="shift-title">
-          <h1 id="shift-title">SHIFT</h1>
-          <h2>Market Adaptive Platform</h2>
-          <p>
-            The SHIFT platform is a dynamic ecosystem designed to give you an
-            unparalleled edge. It is built to continuously scan the landscape
-            for <span class="highlight">high-demand, low-competition</span>
-            opportunities.
-          </p>
-          <p>
-            Through advanced real-time analysis, SHIFT seamlessly adjusts your
-            digital identity and positioning. This ensures you are always
-            exactly where the market needs you to be, maximizing visibility
-            and impact without manual guesswork.
-          </p>
-        </section>
-        <div class="conversation" id="conversation" aria-live="polite"></div>
+      <div class="sample-row" aria-label="Sample data">
+        <button class="ghost-btn" type="button" id="sample-android">Load Android sample</button>
+        <button class="ghost-btn" type="button" id="sample-ios">Load iOS sample</button>
+        <button class="ghost-btn" type="button" id="sample-clear">Clear</button>
       </div>
-    </main>
 
-    <footer class="footer">
-      <form class="composer" id="composer">
-        <label for="message" hidden>Send a message</label>
-        <input id="message" name="message" type="text" autocomplete="off"
-               placeholder="Send a message…" maxlength="500">
-        <button class="send" type="submit">Send</button>
+      <form id="scan-form">
+        <div class="form-grid">
+          <fieldset>
+            <label class="field-label" for="app-title">App title</label>
+            <input type="text" id="app-title" name="app-title" autocomplete="off"
+                   placeholder="e.g. SHIFT Pre-Flight: Launch Scanner">
+            <div class="char-count" id="title-count">0 / 30</div>
+          </fieldset>
+
+          <fieldset>
+            <label class="field-label" for="short-desc">Short description <span style="text-transform:none;font-weight:400">(optional)</span></label>
+            <input type="text" id="short-desc" name="short-desc" autocomplete="off"
+                   placeholder="One-line store tagline">
+            <div class="char-count" id="short-count">0 / 80</div>
+          </fieldset>
+
+          <fieldset class="full">
+            <label class="field-label" for="marketing">Full description / store listing copy</label>
+            <textarea id="marketing" name="marketing"
+                      placeholder="Paste your Google Play or App Store description, landing-page copy, or draft marketing text…"></textarea>
+            <div class="char-count" id="desc-count">0 / 4000</div>
+          </fieldset>
+
+          <fieldset class="full">
+            <label class="field-label" for="config">App configuration</label>
+            <textarea id="config" name="config" class="code"
+                      placeholder="Paste AndroidManifest.xml, Info.plist, package.json, or any build config…"></textarea>
+            <p class="hint">Accepted: AndroidManifest.xml, Info.plist, package.json, gradle files, .env, or any config text. The scanner auto-detects the format.</p>
+          </fieldset>
+        </div>
+
+        <button class="send" type="submit" id="run-btn">Run Pre-Flight Scan</button>
+        <p class="micro-disclaimer">
+          Analysis is fully automated and rule-based; it may miss issues or flag false positives.
+          Verify critical findings independently before deployment.
+        </p>
       </form>
-      <div class="footer-info">
-        <span>AI-assisted analysis may contain errors. Verify important decisions.</span>
-        <span>
-          <a href="#" aria-label="Terms of Service placeholder">Terms</a>
-          <a href="#" aria-label="Privacy Policy placeholder">Privacy</a>
-        </span>
+    </section>
+
+    <section class="card" id="results" hidden aria-labelledby="results-title" aria-live="polite">
+      <h2 class="tagline" id="results-title">Audit report</h2>
+
+      <div class="notice-banner">
+        <strong>📋 Automated Pre-Flight Assessment Notice</strong> —
+        <span id="report-meta"></span>
+        This report is fully automated, rule-based analysis of the configuration and marketing copy you provided.
+        It is optimized for general guidance, discovery, and diagnostic support. It does <strong>not</strong> constitute
+        certified legal advice, official security auditing, or regulatory compliance verification. Software platforms
+        change rapidly — independently test your code, verify current platform guidelines, and consult qualified legal
+        counsel for binding compliance. SHIFT Pre-Flight and its creators accept no liability for platform rejections,
+        security breaches, data liabilities, or operational losses resulting from use of this report.
       </div>
-    </footer>
-  </div>
+
+      <div class="scores" id="scores"></div>
+
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <ul class="findings" id="findings-list"></ul>
+
+      <div class="result-actions">
+        <button class="ghost-btn" type="button" id="download-report">Download report (HTML)</button>
+        <button class="ghost-btn" type="button" id="new-scan">New scan</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-info">
+      <span>Automated analysis may contain errors. Verify important decisions. No data leaves your device.</span>
+      <span>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </span>
+    </div>
+  </footer>
 
   <script>
-    const form = document.querySelector("#composer");
-    const input = document.querySelector("#message");
-    const conversation = document.querySelector("#conversation");
+  "use strict";
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
+  /* ============================================================
+     SHIFT Pre-Flight — client-side launch-readiness scan engine
+     ============================================================ */
 
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = text;
-      conversation.append(userMessage);
+  const SEV = { high: "⚠ High", warn: "⚠ Warning", info: "ℹ Info", pass: "✅ Passed" };
+  const WEIGHT = { high: 15, warn: 7, info: 2, pass: 0 };
 
-      const systemMessage = document.createElement("div");
-      systemMessage.className = "message system";
-      systemMessage.textContent =
-        "Message captured in this front-end demonstration. Connect SHIFT's analysis service to return live market intelligence.";
-      conversation.append(systemMessage);
+  const DANGEROUS_PERMISSIONS = {
+    "ACCESS_FINE_LOCATION":      { label: "precise location", justify: /location|map|nearby|navigat|gps|weather|deliver|track.?(run|ride|route)/i },
+    "ACCESS_BACKGROUND_LOCATION":{ label: "background location", justify: /background location|track.*(route|run|ride)|geofenc/i },
+    "READ_CONTACTS":             { label: "contacts", justify: /contact|invite friend|address book/i },
+    "RECORD_AUDIO":              { label: "microphone", justify: /voice|audio|record|microphone|call|dictat|karaoke|sing/i },
+    "CAMERA":                    { label: "camera", justify: /camera|photo|video|scan|selfie|document|barcode|qr/i },
+    "READ_SMS":                  { label: "SMS messages", justify: /sms|text message|otp|verification code/i },
+    "READ_CALL_LOG":             { label: "call log", justify: /call log|call history|caller/i },
+    "READ_PHONE_STATE":          { label: "phone state", justify: /caller id|phone call|dialer/i },
+    "MANAGE_EXTERNAL_STORAGE":   { label: "all-files storage access", justify: /file manager|file browser|backup tool/i },
+    "SYSTEM_ALERT_WINDOW":       { label: "draw over other apps", justify: /overlay|floating|bubble|screen filter/i },
+    "REQUEST_INSTALL_PACKAGES":  { label: "install other apps", justify: /app store|installer|launcher/i },
+    "QUERY_ALL_PACKAGES":        { label: "list all installed apps", justify: /launcher|antivirus|device manage/i }
+  };
 
-      input.value = "";
-      systemMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  const TRADEMARKS = [
+    "uber", "airbnb", "tiktok", "instagram", "facebook", "whatsapp", "snapchat",
+    "netflix", "spotify", "youtube", "fortnite", "minecraft", "pokemon", "pokémon",
+    "chatgpt", "photoshop", "tinder", "roblox", "duolingo"
+  ];
+
+  const STOPWORDS = new Set(("the a an and or but for nor with your you our their its this that these those from into onto over " +
+    "under about after before while when where what which who whom will shall can could would should may might must have has had " +
+    "was were are is be been being do does did not all any each more most other some such only own same so than too very just " +
+    "app apps get make also than then them they there here how why out off very").split(" "));
+
+  function f(severity, title, detail) { return { severity, title, detail }; }
+
+  function detectConfigType(cfg) {
+    if (/<manifest[\s>]|android\.permission|AndroidManifest/i.test(cfg)) return "android";
+    if (/<plist|<key>|CFBundle|NS\w+UsageDescription/i.test(cfg)) return "ios";
+    if (/"dependencies"|"devDependencies"|"scripts"\s*:/.test(cfg)) return "node";
+    return cfg.trim() ? "generic" : "none";
+  }
+
+  /* ---------- Pillar 1: Safety ---------- */
+  function auditSafety(cfg, cfgType) {
+    const out = [];
+    if (!cfg.trim()) {
+      out.push(f("info", "No configuration provided",
+        "Paste your AndroidManifest.xml, Info.plist, or package.json for the technical safety audit. Only the listing copy was analyzed."));
+      return out;
+    }
+
+    // Secret detection
+    const secretChecks = [
+      [/AKIA[0-9A-Z]{16}/, "AWS access key ID detected", "An AWS access key appears in your configuration. Shipping cloud credentials inside an app lets anyone extract and abuse them. Move keys server-side and rotate this credential immediately."],
+      [/AIza[0-9A-Za-z\-_]{35}/, "Google API key detected", "A Google API key is embedded in your configuration. If it must ship in-app, restrict it by package name and API scope in the Google Cloud console; otherwise move it behind your own backend."],
+      [/sk_live_[0-9a-zA-Z]{10,}/, "Stripe live secret key detected", "A live Stripe secret key appears in your configuration. This key allows charges and refunds on your account. Remove it from the client immediately and rotate it — secret keys belong only on your server."],
+      [/-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/, "Private key material detected", "A private key block is embedded in your configuration. Never ship private keys in an app package; anyone can extract them."],
+      [/(api[_-]?key|secret|token|passwd|password|pwd)["']?\s*[:=]\s*["'][^"'\s]{8,}["']/i, "Possible hardcoded credential", "A value assigned to a key named like api_key / secret / token / password was found. If this is a real credential, move it to a server or a secrets manager — bundled strings are trivially extracted from any published app."]
+    ];
+    for (const [re, title, detail] of secretChecks) {
+      if (re.test(cfg)) out.push(f("high", title, detail));
+    }
+
+    // Cleartext / transport security
+    const httpUrls = (cfg.match(/http:\/\/(?!schemas\.android\.com|www\.w3\.org|apple\.com\/DTDs|localhost|127\.0\.0\.1)[^\s"'<>]+/g) || []);
+    if (httpUrls.length) {
+      out.push(f("warn", "Cleartext (http://) endpoint referenced",
+        `Found ${httpUrls.length} non-HTTPS URL reference(s), e.g. ${httpUrls[0].slice(0, 60)}. Modern Android and iOS block cleartext traffic by default, and stores flag it during review. Use https:// endpoints.`));
+    }
+    if (/usesCleartextTraffic\s*=\s*["']true["']/i.test(cfg)) {
+      out.push(f("warn", "android:usesCleartextTraffic=\"true\"",
+        "Your manifest globally re-enables unencrypted HTTP traffic. If a single legacy endpoint needs it, scope it with a network security config instead of enabling it app-wide."));
+    }
+    if (/NSAllowsArbitraryLoads[\s\S]{0,40}?<true\s*\/>/i.test(cfg)) {
+      out.push(f("warn", "App Transport Security disabled (NSAllowsArbitraryLoads)",
+        "Info.plist disables ATS entirely, allowing unencrypted connections. App Review requires justification for this. Prefer per-domain exceptions."));
+    }
+
+    // Debug / backup flags
+    if (/android:debuggable\s*=\s*["']true["']/i.test(cfg)) {
+      out.push(f("high", "android:debuggable=\"true\" in manifest",
+        "Debuggable builds expose the app to runtime inspection and are rejected by Google Play. Remove the flag (release builds set it automatically)."));
+    }
+    if (/android:allowBackup\s*=\s*["']true["']/i.test(cfg)) {
+      out.push(f("info", "android:allowBackup=\"true\"",
+        "Auto-backup will include app data in device backups. Fine for most apps, but if you store tokens or sensitive data, exclude them with backup rules or set allowBackup to false."));
+    }
+
+    // Target SDK
+    const tsdk = cfg.match(/targetSdkVersion\s*[="' ]*(\d+)|android:targetSdkVersion\s*=\s*["'](\d+)["']/i);
+    if (tsdk) {
+      const v = parseInt(tsdk[1] || tsdk[2], 10);
+      if (v < 35) {
+        out.push(f("warn", `targetSdkVersion ${v} is below current Play requirements`,
+          "Google Play requires new apps and updates to target a recent API level (API 35 / Android 15 as of Aug 2025; the bar rises every year). Raise targetSdkVersion and retest, or your submission will be blocked."));
+      } else {
+        out.push(f("pass", `targetSdkVersion ${v} meets current Play requirements`, "Target API level satisfies Google Play's current minimum for new submissions."));
+      }
+    }
+
+    // Dangerous permissions (presence only; justification is a legal-pillar check)
+    const perms = Object.keys(DANGEROUS_PERMISSIONS).filter(p => new RegExp("(android\\.permission\\.)?" + p).test(cfg));
+    if (perms.length) {
+      out.push(f("info", `Sensitive permissions requested: ${perms.join(", ")}`,
+        "Each sensitive permission increases review scrutiny and user drop-off at install. Remove any your core features don't need, and use runtime rationale prompts for the rest."));
+    }
+
+    // Node dependency hygiene
+    if (cfgType === "node") {
+      if (/:\s*["'](\*|latest)["']/.test(cfg)) {
+        out.push(f("warn", "Wildcard dependency versions (\"*\" or \"latest\")",
+          "Unpinned dependencies make builds non-reproducible and can silently pull in breaking or compromised releases. Pin versions and commit a lockfile."));
+      }
+      if (!/"private"\s*:\s*true/.test(cfg) && /"name"\s*:/.test(cfg)) {
+        out.push(f("info", "package.json is not marked \"private\": true",
+          "If this package is an app (not a library), mark it private to prevent accidental npm publication."));
+      }
+    }
+
+    if (!out.some(x => x.severity === "high" || x.severity === "warn")) {
+      out.push(f("pass", "No high-risk technical issues detected",
+        "No hardcoded secrets, debug flags, or cleartext traffic were found in the provided configuration. Automated scanning is not exhaustive — run a full SAST tool before release."));
+    }
+    return out;
+  }
+
+  /* ---------- Pillar 2: Legal & compliance ---------- */
+  function auditLegal(cfg, marketing, allText) {
+    const out = [];
+
+    // Payments: digital goods must use platform billing
+    const paymentMention = /subscription|premium|in.?app purchase|unlock|upgrade|credits?|coins|token pack|paywall|pro version|buy/i.test(marketing);
+    const platformBilling = /play billing|com\.android\.vending\.BILLING|in.?app purchase|storekit|app store billing/i.test(allText);
+    if (paymentMention && !platformBilling) {
+      out.push(f("high", "Digital purchases mentioned without platform billing reference",
+        "Your listing mentions purchases, subscriptions, or unlocks, but neither the config nor the copy references Google Play Billing / Apple In-App Purchase. Store policy (e.g. Apple guideline 3.1.1, Play Payments policy) requires digital goods to use native platform billing — non-compliance means rejection or removal."));
+    } else if (paymentMention && platformBilling) {
+      out.push(f("pass", "Purchases mentioned and platform billing referenced",
+        "Remember to declare in-app products in the store console and mark the listing as containing in-app purchases."));
+    }
+
+    // Privacy policy
+    if (marketing && !/privacy policy|privacy\.html|\/privacy/i.test(allText)) {
+      out.push(f("high", "No privacy policy referenced",
+        "Google Play requires every app to link a privacy policy in the store listing and complete the Data safety form; Apple requires a privacy policy URL and App Privacy labels. Publish a policy URL before submitting."));
+    } else if (marketing) {
+      out.push(f("pass", "Privacy policy referenced", "Make sure the linked policy URL is live, matches your actual data practices, and is entered in the store console — not only in the description."));
+    }
+
+    // Children / families
+    if (/\bkids?\b|\bchild(ren)?\b|toddler|preschool|for families|family friendly/i.test(marketing)) {
+      out.push(f("warn", "Child-directed language detected — COPPA / Families policies apply",
+        "Marketing that targets children triggers Google Play Families policy and COPPA (US) / GDPR-K (EU) obligations: restricted ads, no behavioral tracking, verified parental consent for data collection. Confirm your target-audience declaration in the console matches this copy."));
+    }
+
+    // Permission vs. marketing justification (privacy compliance gap)
+    for (const [perm, meta] of Object.entries(DANGEROUS_PERMISSIONS)) {
+      const requested = new RegExp("(android\\.permission\\.)?" + perm).test(cfg);
+      if (requested && marketing && !meta.justify.test(marketing)) {
+        out.push(f("warn", `Privacy compliance gap: ${perm}`,
+          `Your app requests ${meta.label} access, but the listing copy never explains a user-facing reason for it. Stores and privacy laws (CCPA/GDPR data-minimization) expect a clear declared purpose for every sensitive permission — reviewers reject apps whose permissions exceed their described features.`));
+      }
+    }
+    // iOS usage descriptions
+    const usageKeys = (cfg.match(/NS\w+UsageDescription/g) || []);
+    for (const key of usageKeys) {
+      const emptyRe = new RegExp("<key>" + key + "</key>\\s*<string>\\s*</string>");
+      if (emptyRe.test(cfg)) {
+        out.push(f("warn", `${key} is empty`,
+          "iOS shows this string in the permission prompt; App Review rejects empty or generic usage descriptions. Write a specific sentence explaining why the app needs this access."));
+      }
+    }
+
+    // Regulated categories
+    if (/medical|diagnos|health advice|symptom|treatment|therapy/i.test(marketing)) {
+      out.push(f("info", "Health / medical language detected",
+        "Health claims attract extra review and, in some jurisdictions, medical-device regulation. Add a clear \"not medical advice\" disclaimer and avoid diagnostic claims unless certified."));
+    }
+    if (/invest|trading|loan|crypto|wallet|gambling|casino|betting/i.test(marketing)) {
+      out.push(f("info", "Financial / gambling language detected",
+        "Finance and real-money gaming categories require extra declarations, licenses, and country restrictions on both stores. Verify the specific policy for your category before submission."));
+    }
+
+    // Liability disclaimer
+    if (marketing && /ai|automated|analysis|recommend/i.test(marketing) && !/may (contain|include) (errors|mistakes)|verify|no (guarantee|warranty)|as.?is/i.test(allText)) {
+      out.push(f("info", "No accuracy / liability disclaimer found",
+        "Your copy describes automated or AI-driven functionality without a disclaimer. Add a short notice that results may contain errors and should be verified — it protects you and is increasingly expected by store reviewers."));
+    }
+
+    if (!out.length) {
+      out.push(f("pass", "No legal red flags detected in the provided text",
+        "Automated review covers common store-policy pitfalls only. For binding compliance (GDPR, CCPA, COPPA), consult qualified counsel."));
+    }
+    return out;
+  }
+
+  /* ---------- Pillar 3: Marketing / ASO ---------- */
+  function auditMarketing(title, shortDesc, marketing) {
+    const out = [];
+
+    if (title) {
+      if (title.length > 30) {
+        out.push(f("warn", `App title is ${title.length} characters (Google Play limit: 30)`,
+          "Play hard-limits titles to 30 characters; the App Store allows 30 for the name field too. Trim the title and move descriptive keywords into the short description."));
+      } else {
+        out.push(f("pass", `Title length OK (${title.length}/30)`, "Fits Google Play's 30-character limit."));
+      }
+      if (/[!]{1,}|[A-Z]{5,}|💯|🔥|#1|№1/.test(title)) {
+        out.push(f("warn", "Promotional symbols / caps in title",
+          "Google Play metadata policy bans emoji, ALL-CAPS (unless brand), exclamation marks, and rank claims like \"#1\" in titles — a common rejection reason."));
+      }
+    } else {
+      out.push(f("info", "No app title provided", "Enter your store title to check length and policy compliance."));
+    }
+
+    if (shortDesc && shortDesc.length > 80) {
+      out.push(f("warn", `Short description is ${shortDesc.length} characters (limit: 80)`,
+        "Google Play truncates short descriptions at 80 characters. Front-load the value proposition."));
+    }
+
+    if (marketing) {
+      if (marketing.length > 4000) {
+        out.push(f("warn", `Description is ${marketing.length} characters (limit: 4000)`,
+          "Google Play caps full descriptions at 4000 characters. Cut it down or the console will refuse it."));
+      }
+      if (marketing.length < 80) {
+        out.push(f("warn", "Description is very short",
+          "Store algorithms index your description for search. Under ~80 characters gives the algorithm almost nothing to rank; aim for 2–4 short paragraphs covering features and keywords naturally."));
+      }
+
+      // Keyword stuffing
+      const words = marketing.toLowerCase().match(/[a-z][a-z'-]{3,}/g) || [];
+      const freq = {};
+      for (const w of words) if (!STOPWORDS.has(w)) freq[w] = (freq[w] || 0) + 1;
+      const stuffed = Object.entries(freq).filter(([w, n]) => n >= 6 && n / words.length > 0.03);
+      if (stuffed.length) {
+        out.push(f("warn", `Possible keyword stuffing: ${stuffed.map(([w, n]) => `"${w}" ×${n}`).join(", ")}`,
+          "Repeating the same keyword many times violates Play's metadata policy and reads badly to users. Use synonyms and natural sentences — modern store search doesn't reward repetition."));
+      }
+
+      // Trademarks
+      const hits = TRADEMARKS.filter(t => new RegExp("\\b" + t + "\\b", "i").test(marketing));
+      if (hits.length) {
+        out.push(f("warn", `Trademark infringement risk: mentions ${hits.join(", ")}`,
+          "Using competitor app names in public metadata (\"like Uber for X\") can trigger rapid metadata rejection or legal takedown demands under store intellectual-property policies. Describe the category instead of naming competitors."));
+      }
+
+      // Superlative / performance claims
+      if (/\b(best|#1|number one|top rated|editor'?s choice|guaranteed)\b/i.test(marketing)) {
+        out.push(f("info", "Unverifiable superlative claims (\"best\", \"#1\", \"guaranteed\")",
+          "Stores restrict rank and performance claims unless you can substantiate them (e.g. an actual Editors' Choice award). Rephrase around concrete benefits."));
+      }
+
+      // Readability
+      const sentences = marketing.split(/[.!?]+\s/).filter(s => s.trim().length > 0);
+      if (sentences.length) {
+        const avg = words.length / sentences.length;
+        if (avg > 30) {
+          out.push(f("info", "Long average sentence length",
+            `Sentences average ~${Math.round(avg)} words. Store browsers skim — shorter sentences and bullet-style lines convert better.`));
+        }
+      }
+    } else {
+      out.push(f("info", "No description provided", "Paste your store listing copy to run the marketing / ASO audit."));
+    }
+
+    if (!out.some(x => x.severity !== "pass")) {
+      out.push(f("pass", "Listing metadata looks clean",
+        "No length, stuffing, trademark, or claim issues detected. A/B test your first two description lines — they carry most of the conversion weight."));
+    }
+    return out;
+  }
+
+  /* ---------- Scoring & rendering ---------- */
+
+  function scoreOf(findings) {
+    let s = 100;
+    for (const x of findings) s -= WEIGHT[x.severity];
+    return Math.max(5, s);
+  }
+
+  const $ = sel => document.querySelector(sel);
+  let lastResults = null;
+
+  function scoreClass(v) { return v >= 85 ? "good" : v >= 60 ? "mid" : "bad"; }
+
+  function render(results) {
+    lastResults = results;
+    const pillars = [
+      ["safety", "Safety score"],
+      ["legal", "Legal score"],
+      ["marketing", "Marketing score"]
+    ];
+
+    $("#report-meta").textContent =
+      `Product audited: ${results.title || "Untitled app"} | Scan date: ${new Date().toLocaleDateString()}. `;
+
+    $("#scores").innerHTML = pillars.map(([key, label]) => {
+      const v = results.scores[key];
+      const c = scoreClass(v);
+      return `<div class="score-card">
+        <h3>${label}</h3>
+        <div class="score-value score-${c}">${v}<span class="of"> / 100</span></div>
+        <div class="score-bar"><span class="bar-${c}" style="width:${v}%"></span></div>
+      </div>`;
+    }).join("");
+
+    const tabs = $("#tabs");
+    tabs.innerHTML = pillars.map(([key], i) => {
+      const issues = results.findings[key].filter(x => x.severity !== "pass").length;
+      return `<button class="tab${i === 0 ? " active" : ""}" role="tab" data-tab="${key}">
+        ${key.charAt(0).toUpperCase() + key.slice(1)} findings<span class="count">${issues}</span>
+      </button>`;
+    }).join("");
+    tabs.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabs.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderFindings(btn.dataset.tab);
+      });
     });
+
+    renderFindings("safety");
+    $("#results").hidden = false;
+    $("#results").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function findingHtml(x) {
+    return `<li class="finding ${x.severity}">
+      <span class="sev">${SEV[x.severity]}</span>
+      <div><strong>${escapeHtml(x.title)}</strong>${escapeHtml(x.detail)}</div>
+    </li>`;
+  }
+
+  function renderFindings(key) {
+    $("#findings-list").innerHTML = lastResults.findings[key].map(findingHtml).join("");
+  }
+
+  function runScan() {
+    const title = $("#app-title").value.trim();
+    const shortDesc = $("#short-desc").value.trim();
+    const marketing = $("#marketing").value.trim();
+    const cfg = $("#config").value;
+    const cfgType = detectConfigType(cfg);
+    const allText = cfg + "\n" + marketing + "\n" + shortDesc;
+
+    const findings = {
+      safety: auditSafety(cfg, cfgType),
+      legal: auditLegal(cfg, marketing, allText),
+      marketing: auditMarketing(title, shortDesc, marketing)
+    };
+    const scores = {
+      safety: scoreOf(findings.safety),
+      legal: scoreOf(findings.legal),
+      marketing: scoreOf(findings.marketing)
+    };
+    render({ title, scores, findings });
+  }
+
+  $("#scan-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const btn = $("#run-btn");
+    btn.disabled = true;
+    btn.textContent = "Analyzing build…";
+    // slight delay so the state change is perceivable
+    setTimeout(() => {
+      runScan();
+      btn.disabled = false;
+      btn.textContent = "Run Pre-Flight Scan";
+    }, 350);
+  });
+
+  /* ---------- Char counters ---------- */
+  function bindCount(inputSel, countSel, limit) {
+    const input = $(inputSel), count = $(countSel);
+    const update = () => {
+      count.textContent = `${input.value.length} / ${limit}`;
+      count.classList.toggle("over", input.value.length > limit);
+    };
+    input.addEventListener("input", update);
+    update();
+  }
+  bindCount("#app-title", "#title-count", 30);
+  bindCount("#short-desc", "#short-count", 80);
+  bindCount("#marketing", "#desc-count", 4000);
+
+  /* ---------- Samples ---------- */
+  const SAMPLE_ANDROID = {
+    title: "SHIFT Pre-Flight: The #1 Best App Launch Scanner Ever",
+    short: "Scan your app before launch",
+    marketing: `The best app scanner ever made! Better than ChatGPT! Scan scan scan your app app app before launch.
+Unlock premium credits to buy more scans and get the pro version upgrade today.
+Track your location history and record voice notes with our smart assistant.`,
+    config: `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.shift">
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.READ_CONTACTS" />
+  <application
+      android:label="Shift"
+      android:debuggable="true"
+      android:allowBackup="true"
+      android:usesCleartextTraffic="true">
+    <meta-data android:name="com.example.API_KEY" android:value="AIzaSyD-EXAMPLEKEY1234567890abcdefghijk" />
+    <meta-data android:name="analytics" android:value="http://analytics.example.com/collect" />
+  </application>
+</manifest>`
+  };
+
+  const SAMPLE_IOS = {
+    title: "PhotoVault Pro",
+    short: "Private photo storage with smart albums",
+    marketing: `PhotoVault Pro keeps your photos organized in private, encrypted albums.
+Use your camera to capture and file documents instantly. Upgrade to a premium subscription for unlimited storage via In-App Purchase.
+We respect your data — see our privacy policy at photovault.example/privacy. Results from smart album suggestions may contain errors; verify before deleting originals.`,
+    config: `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key><string>PhotoVault Pro</string>
+  <key>NSCameraUsageDescription</key><string>PhotoVault uses the camera to capture documents you choose to save.</string>
+  <key>NSPhotoLibraryUsageDescription</key><string></string>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key><true/>
+  </dict>
+</dict>
+</plist>`
+  };
+
+  function loadSample(s) {
+    $("#app-title").value = s.title;
+    $("#short-desc").value = s.short;
+    $("#marketing").value = s.marketing;
+    $("#config").value = s.config;
+    ["#app-title", "#short-desc", "#marketing"].forEach(sel => $(sel).dispatchEvent(new Event("input")));
+  }
+
+  $("#sample-android").addEventListener("click", () => loadSample(SAMPLE_ANDROID));
+  $("#sample-ios").addEventListener("click", () => loadSample(SAMPLE_IOS));
+  $("#sample-clear").addEventListener("click", () => {
+    loadSample({ title: "", short: "", marketing: "", config: "" });
+    $("#results").hidden = true;
+  });
+
+  /* ---------- Report download ---------- */
+  $("#download-report").addEventListener("click", () => {
+    if (!lastResults) return;
+    const r = lastResults;
+    const section = (key, label) => `
+      <h2>${label} — ${r.scores[key]}/100</h2>
+      <ul>${r.findings[key].map(x => `<li><b>[${SEV[x.severity]}] ${escapeHtml(x.title)}</b><br>${escapeHtml(x.detail)}</li>`).join("")}</ul>`;
+    const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>SHIFT Pre-Flight Report — ${escapeHtml(r.title || "Untitled app")}</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px;color:#1a1a24;line-height:1.6}
+.banner{background:#fff7e0;border:1px solid #e0c060;border-radius:8px;padding:12px 16px;font-size:.85rem}
+h1{letter-spacing:-.02em}h2{margin-top:2em;border-bottom:1px solid #ddd;padding-bottom:4px}
+ul{padding-left:1.2em}li{margin-bottom:.8em}</style></head><body>
+<h1>SHIFT Pre-Flight — Automated Assessment</h1>
+<p><b>Product audited:</b> ${escapeHtml(r.title || "Untitled app")}<br><b>Scan date:</b> ${new Date().toLocaleString()}</p>
+<div class="banner"><b>📋 Automated Pre-Flight Assessment Notice.</b>
+This document provides fully automated, rule-based analysis of provided configuration and marketing copy.
+It is optimized for general guidance, discovery, and diagnostic support. It does not constitute certified legal advice,
+official security auditing, or regulatory compliance verification. Independently test your code, verify current platform
+payment guidelines, and consult qualified legal counsel for binding regulatory compliance. SHIFT Pre-Flight and its
+creators accept no liability for platform rejections, security breaches, data liabilities, or operational losses
+resulting from the use of this data.</div>
+${section("safety", "1 · Safety audit")}
+${section("legal", "2 · Legal & compliance")}
+${section("marketing", "3 · Store listing (ASO)")}
+</body></html>`;
+    const blob = new Blob([html], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `shift-preflight-report-${(r.title || "app").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40)}.html`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("#new-scan").addEventListener("click", () => {
+    $("#results").hidden = true;
+    $("#scan-form").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  /* ---------- PWA ---------- */
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
   </script>
 </body>
 </html>
