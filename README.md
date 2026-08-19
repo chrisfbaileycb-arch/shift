@@ -71,8 +71,19 @@ disable, and local scans keep working.
 
 Before this import, the repository held an unrelated prototype — a "market
 adaptive platform" concept that shared the SHIFT name but none of the code. It
-is preserved at the tag `v0-market-adaptive-concept`:
+is not gone: it remains in history at commit `de69cfe`, which stays reachable
+from `main`.
 
 ```bash
-git show v0-market-adaptive-concept:index.html
+git show de69cfe:index.html      # the old prototype
+git show de69cfe:README.md       # what it claimed to be
 ```
+
+Tag it locally if you want a friendlier name (pushing tags is not permitted
+from the automated session that made this import):
+
+```bash
+git tag v0-market-adaptive-concept de69cfe && git push origin v0-market-adaptive-concept
+```
+
+Do not force-push `main` past that commit, or the prototype is lost.
