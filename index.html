@@ -3,358 +3,103 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SHIFT is a market-adaptive platform for identifying high-demand, low-competition opportunities.">
-  <title>SHIFT | Market Adaptive Platform</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0d0d12;
-      --surface: #111118;
-      --panel: #1e1e2a;
-      --panel-deep: #1a1a28;
-      --border: #333345;
-      --text: #e8e8ef;
-      --muted: #a0a0b0;
-      --quiet: #707080;
-      --cyan: #00c6ff;
-      --blue: #0072ff;
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      background:
-        radial-gradient(circle at 50% 15%, rgba(0, 114, 255, 0.10), transparent 34rem),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    button, input { font: inherit; }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 68px;
-      padding: 14px clamp(18px, 4vw, 32px);
-      border-bottom: 1px solid #2a2a35;
-      background: rgba(17, 17, 24, 0.88);
-      backdrop-filter: blur(16px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      background: linear-gradient(90deg, var(--cyan), var(--blue));
-      background-clip: text;
-      color: transparent;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: .12em;
-    }
-
-    .model-badge, .status {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--panel);
-      color: var(--muted);
-      font-size: .78rem;
-      padding: 5px 10px;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .status::before {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #42d392;
-      box-shadow: 0 0 12px #42d392;
-      content: "";
-    }
-
-    .tabs {
-      display: flex;
-      gap: 3px;
-      padding: 15px clamp(18px, 4vw, 32px) 0;
-    }
-
-    .tab {
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-bottom: 0;
-      border-radius: 9px 9px 0 0;
-      background: transparent;
-      color: var(--quiet);
-    }
-
-    .tab.active {
-      border-color: #2a2a35;
-      background: var(--panel);
-      color: white;
-    }
-
-    .main {
-      margin: 0 clamp(18px, 4vw, 32px);
-      padding: clamp(28px, 6vw, 64px) 20px;
-      border: 1px solid #2a2a35;
-      border-radius: 0 0 14px 14px;
-      background: rgba(30, 30, 42, .82);
-      overflow-y: auto;
-    }
-
-    .content {
-      width: min(100%, 720px);
-      margin: auto;
-    }
-
-    .card {
-      position: relative;
-      padding: clamp(28px, 6vw, 52px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(145deg, #252535, var(--panel-deep));
-      box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
-      overflow: hidden;
-    }
-
-    .card::before {
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), transparent);
-      content: "";
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      background: linear-gradient(90deg, var(--cyan), var(--blue));
-      background-clip: text;
-      color: transparent;
-      font-size: clamp(2.25rem, 8vw, 4rem);
-      letter-spacing: -.04em;
-      line-height: 1;
-    }
-
-    h2 {
-      margin: 0 0 30px;
-      color: var(--muted);
-      font-size: .9rem;
-      font-weight: 500;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-
-    p {
-      margin: 0 0 18px;
-      color: #c8c8d5;
-      font-size: clamp(1rem, 2.5vw, 1.08rem);
-      line-height: 1.75;
-    }
-
-    p:last-child { margin-bottom: 0; }
-    .highlight { color: var(--cyan); font-weight: 650; }
-
-    .conversation {
-      display: grid;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .message {
-      max-width: 88%;
-      padding: 11px 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: #d0d0dc;
-      font-size: .92rem;
-      line-height: 1.5;
-    }
-
-    .message.user {
-      justify-self: end;
-      border-color: rgba(0, 114, 255, .55);
-      background: rgba(0, 114, 255, .16);
-    }
-
-    .message.system { background: rgba(255, 255, 255, .035); }
-
-    .footer {
-      padding: 18px clamp(18px, 4vw, 32px) 26px;
-    }
-
-    .composer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      max-width: 900px;
-      margin: auto;
-      padding: 8px 9px 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, .24);
-    }
-
-    .composer:focus-within { border-color: var(--blue); }
-
-    .composer input {
-      min-width: 0;
-      flex: 1;
-      padding: 9px;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: white;
-    }
-
-    .composer input::placeholder { color: var(--quiet); }
-
-    .send {
-      padding: 10px 22px;
-      border: 0;
-      border-radius: 11px;
-      background: linear-gradient(90deg, var(--cyan), var(--blue));
-      color: white;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .send:hover { filter: brightness(1.08); }
-    .send:active { transform: translateY(1px); }
-
-    .footer-info {
-      display: flex;
-      justify-content: space-between;
-      max-width: 900px;
-      margin: 11px auto 0;
-      color: var(--quiet);
-      font-size: .72rem;
-    }
-
-    .footer-info a {
-      margin-left: 16px;
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .footer-info a:hover { color: var(--muted); }
-
-    @media (max-width: 600px) {
-      .status { display: none; }
-      .tabs { padding-top: 10px; }
-      .tab { padding: 9px 14px; }
-      .main { padding-inline: 12px; }
-      .footer-info { align-items: center; flex-direction: column; gap: 8px; }
-      .footer-info a:first-child { margin-left: 0; }
-      .send { padding-inline: 16px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        transition: none !important;
-      }
-    }
-  </style>
+  <meta name="description" content="SHIFT Pre-Flight: launch-readiness scanner for app developers. Free local audits plus AI deep scans of your app config and store listing.">
+  <title>SHIFT Pre-Flight | Launch Readiness Scanner</title>
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="brand">
-        <div class="logo">SHIFT</div>
-        <div class="model-badge">GLM-4.7</div>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">SHIFT</div>
+      <div class="model-badge">Pre-Flight</div>
+    </div>
+    <div class="account">
+      <span class="credits-pill" id="credits-pill" hidden>Credits: <b id="credits-value">0</b></span>
+      <button class="ghost-btn" type="button" id="auth-btn">Sign in</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="card intro">
+      <h1>Pre-Flight</h1>
+      <h2 class="tagline">Launch readiness scanner for app developers</h2>
+      <p>You finished the code &mdash; but are you ready to launch? Pre-Flight audits your app configuration and store listing before you submit, catching the mistakes that get apps rejected, flagged, or sued.</p>
+      <div class="pillars">
+        <div class="pillar"><strong>1 &middot; Safety audit</strong> Hardcoded keys, cleartext traffic, debug flags, risky permissions, outdated target SDK.</div>
+        <div class="pillar"><strong>2 &middot; Legal &amp; compliance</strong> Privacy-policy gaps, platform billing rules, COPPA flags, permission justification.</div>
+        <div class="pillar"><strong>3 &middot; Store listing</strong> Metadata limits, keyword stuffing, trademark risk, banned claims.</div>
       </div>
-      <div class="status">Interface ready</div>
-    </header>
+      <p class="modes-note"><span class="highlight">Local Scan</span> is free and runs entirely in your browser &mdash; nothing is uploaded. <span class="highlight">AI Deep Scan</span> sends your text to our AI engine for a deeper audit and costs 1 credit. New accounts get 3 free credits.</p>
+    </section>
 
-    <nav class="tabs" aria-label="Workspace files">
-      <button class="tab" type="button">HTML</button>
-      <button class="tab active" type="button" aria-current="page">index.html</button>
-    </nav>
-
-    <main class="main">
-      <div class="content">
-        <section class="card" aria-labelledby="shift-title">
-          <h1 id="shift-title">SHIFT</h1>
-          <h2>Market Adaptive Platform</h2>
-          <p>
-            The SHIFT platform is a dynamic ecosystem designed to give you an
-            unparalleled edge. It is built to continuously scan the landscape
-            for <span class="highlight">high-demand, low-competition</span>
-            opportunities.
-          </p>
-          <p>
-            Through advanced real-time analysis, SHIFT seamlessly adjusts your
-            digital identity and positioning. This ensures you are always
-            exactly where the market needs you to be, maximizing visibility
-            and impact without manual guesswork.
-          </p>
-        </section>
-        <div class="conversation" id="conversation" aria-live="polite"></div>
+    <section class="card">
+      <h2 class="tagline">Run a scan</h2>
+      <div class="sample-row">
+        <button class="ghost-btn" type="button" id="sample-android">Load Android sample</button>
+        <button class="ghost-btn" type="button" id="sample-ios">Load iOS sample</button>
+        <button class="ghost-btn" type="button" id="sample-clear">Clear</button>
       </div>
-    </main>
-
-    <footer class="footer">
-      <form class="composer" id="composer">
-        <label for="message" hidden>Send a message</label>
-        <input id="message" name="message" type="text" autocomplete="off"
-               placeholder="Send a message…" maxlength="500">
-        <button class="send" type="submit">Send</button>
+      <form id="scan-form">
+        <div class="form-grid">
+          <fieldset>
+            <label class="field-label" for="app-title">App title</label>
+            <input type="text" id="app-title" autocomplete="off" placeholder="e.g. PhotoVault Pro">
+            <div class="char-count" id="title-count">0 / 30</div>
+          </fieldset>
+          <fieldset>
+            <label class="field-label" for="short-desc">Short description (optional)</label>
+            <input type="text" id="short-desc" autocomplete="off" placeholder="One-line store tagline">
+            <div class="char-count" id="short-count">0 / 80</div>
+          </fieldset>
+          <fieldset class="full">
+            <label class="field-label" for="marketing">Full description / store listing copy</label>
+            <textarea id="marketing" placeholder="Paste your store description, landing-page copy, or draft marketing text"></textarea>
+            <div class="char-count" id="desc-count">0 / 4000</div>
+          </fieldset>
+          <fieldset class="full">
+            <label class="field-label" for="config">App configuration</label>
+            <textarea id="config" class="code" placeholder="Paste AndroidManifest.xml, Info.plist, package.json, or any build config"></textarea>
+            <p class="hint">Auto-detects AndroidManifest.xml, Info.plist, package.json, and generic configs. Do not paste live production secrets.</p>
+          </fieldset>
+        </div>
+        <div class="action-row">
+          <button class="send" type="submit" id="run-btn">Run Local Scan (free)</button>
+          <button class="send deep" type="button" id="deep-btn">AI Deep Scan (1 credit)</button>
+        </div>
+        <p class="micro-disclaimer">Analysis is automated; it may miss issues or flag false positives. AI Deep Scans send your text to our AI engine and cost 1 credit. Verify critical findings independently before deployment.</p>
       </form>
-      <div class="footer-info">
-        <span>AI-assisted analysis may contain errors. Verify important decisions.</span>
-        <span>
-          <a href="#" aria-label="Terms of Service placeholder">Terms</a>
-          <a href="#" aria-label="Privacy Policy placeholder">Privacy</a>
-        </span>
+    </section>
+
+    <section class="card" id="results" hidden>
+      <h2 class="tagline" id="results-title">Audit report</h2>
+      <div class="notice-banner"><strong>Automated Pre-Flight Assessment Notice</strong> &mdash; <span id="report-meta"></span> This report is automated analysis of the content you provided. It is not certified legal advice, official security auditing, or regulatory compliance verification, and it does not guarantee store approval. Verify findings independently and consult qualified counsel for binding compliance. SHIFT Pre-Flight accepts no liability for losses resulting from use of this report.</div>
+      <div class="scores" id="scores"></div>
+      <div class="tabs" id="tabs"></div>
+      <ul class="findings" id="findings-list"></ul>
+      <div class="result-actions">
+        <button class="ghost-btn" type="button" id="download-report">Download report (HTML)</button>
+        <button class="ghost-btn" type="button" id="new-scan">New scan</button>
       </div>
-    </footer>
-  </div>
+    </section>
 
-  <script>
-    const form = document.querySelector("#composer");
-    const input = document.querySelector("#message");
-    const conversation = document.querySelector("#conversation");
+    <section class="card" id="wallet-card">
+      <h2 class="tagline">Scan credits &amp; billing</h2>
+      <p id="wallet-status">Sign in to see your wallet. New accounts start with 3 free AI scan credits.</p>
+      <div class="packs" id="packs"></div>
+      <p class="hint" id="billing-note"></p>
+    </section>
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
+    <section class="card" id="history-card" hidden>
+      <h2 class="tagline">Your report history</h2>
+      <ul class="history" id="history-list"></ul>
+    </section>
+  </main>
 
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = text;
-      conversation.append(userMessage);
-
-      const systemMessage = document.createElement("div");
-      systemMessage.className = "message system";
-      systemMessage.textContent =
-        "Message captured in this front-end demonstration. Connect SHIFT's analysis service to return live market intelligence.";
-      conversation.append(systemMessage);
-
-      input.value = "";
-      systemMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-  </script>
+  <footer class="footer">
+    <div class="footer-info">
+      <span>Automated analysis may contain errors. Verify important decisions.</span>
+      <span><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></span>
+    </div>
+  </footer>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

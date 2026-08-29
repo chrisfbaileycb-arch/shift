@@ -1,45 +1,89 @@
-# SHIFT
+# SHIFT Pre-Flight
 
-SHIFT is a responsive front-end concept for a market-adaptive platform designed
-to identify high-demand, low-competition opportunities and present them through
-a focused AI-style interface.
+Launch-readiness scanner for app developers. Audits an app's configuration and
+store listing before submission and reports safety, legal, and store-listing
+findings.
 
-## Current state
+- Live: https://5b5170f25781d9d9dc.v2.appdeploy.ai/
+- Platform: AppDeploy (`app_id: 5b5170f25781d9d9dc`)
 
-This repository contains a standalone proof-of-concept interface:
+## This repository is the source of truth
 
-- responsive desktop and mobile layout
-- premium dark visual design
-- accessible semantic HTML
-- front-end message demonstration
-- clear notice that live market analysis is not connected yet
+The app previously existed only as an AppDeploy snapshot. This repository now
+holds that source, imported verbatim from applied version `1786457122129` (v7,
+2026-08-11). Character counts were verified file-by-file against the remote
+snapshot at import time.
 
-The message composer currently returns a demonstration response. It does not
-send data to an AI model or market-analysis service.
+From here on, edit the code **here**, then deploy. Do not edit the AppDeploy
+snapshot directly — that is how the two drifted apart in the first place.
 
-## Preview locally
+## Layout
 
-Download or clone this repository, then open `index.html` in a browser.
+The tree mirrors the AppDeploy snapshot exactly, so paths line up on deploy.
 
-```bash
-git clone https://github.com/chrisfbaileycb-arch/shift.git
-cd shift
-xdg-open index.html
+```
+index.html                  scan form and landing page
+src/main.ts                 all local (in-browser) scan rules + UI
+src/styles.css              styles
+backend/index.ts            wallet, credits, AI deep scan, Stripe checkout + webhook
+public/privacy.html         privacy policy
+public/terms.html           terms of use
+tests/tests.txt             AppDeploy e2e test definitions
+appdeploy.auth-login.json   hosted sign-in page config
+package.json tsconfig.json vite.config.ts tailwind.config.js postcss.config.js
 ```
 
-The `xdg-open` command is suitable for most Linux desktops, including Zorin OS.
+## Two scan modes
 
-## Next development stage
+**Local Scan** is free, requires no account, and runs entirely in the browser.
+Every rule lives in `src/main.ts` (`auditSafety`, `auditLegal`,
+`auditMarketing`). Nothing is uploaded.
 
-To make SHIFT operational, connect the interface to an authenticated backend
-that can:
+**AI Deep Scan** posts to `POST /api/deep-scan`, requires sign-in, and costs one
+credit. New accounts get 3 free credits.
 
-1. accept and validate user requests;
-2. gather permitted market information from approved sources;
-3. analyze demand and competition using documented scoring criteria;
-4. return evidence-backed recommendations;
-5. preserve user privacy, rate limits, and audit history.
+## Develop
 
-Important decisions should be independently verified. AI-generated analysis may
-contain errors and should not be presented as guaranteed financial or business
-outcomes.
+```bash
+npm install
+npm run dev
+```
+
+Local Scan works fully offline in `npm run dev`. Deep Scan, wallet, and billing
+need the deployed backend.
+
+## Deploy
+
+Deploys go through the AppDeploy MCP tools against `app_id 5b5170f25781d9d9dc`.
+The working tree here is the local copy those tools upload from. Deploy from a
+clean checkout so what ships matches what is committed.
+
+Roll back with `apply_app_version`; `get_app_versions` lists them.
+
+## Secrets
+
+`STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` live in AppDeploy's secret store
+and are read at runtime via `secrets.readSecret`. They are never committed here.
+Billing degrades gracefully when they are absent: packs render, buy buttons
+disable, and local scans keep working.
+
+## Prior history
+
+Before this import, the repository held an unrelated prototype — a "market
+adaptive platform" concept that shared the SHIFT name but none of the code. It
+is not gone: it remains in history at commit `de69cfe`, which stays reachable
+from `main`.
+
+```bash
+git show de69cfe:index.html      # the old prototype
+git show de69cfe:README.md       # what it claimed to be
+```
+
+Tag it locally if you want a friendlier name (pushing tags is not permitted
+from the automated session that made this import):
+
+```bash
+git tag v0-market-adaptive-concept de69cfe && git push origin v0-market-adaptive-concept
+```
+
+Do not force-push `main` past that commit, or the prototype is lost.

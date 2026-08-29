@@ -1,0 +1,20 @@
+{
+  "methods": [
+    "google",
+    "apple",
+    "x"
+  ],
+  "headline": "Sign in to SHIFT Pre-Flight",
+  "subtitle": "Your AI scan credits and report history are tied to your account.",
+  "style": {
+    "mode": "dark",
+    "accentColor": "#0072ff",
+    "backgroundColor": "#0d0d12",
+    "panelColor": "#1e1e2a",
+    "textColor": "#e8e8ef",
+    "fontFamily": "Inter, system-ui, sans-serif",
+    "borderRadius": 12
+  },
+  "termsUrl": "public/terms.html",
+  "privacyUrl": "public/privacy.html"
+}
