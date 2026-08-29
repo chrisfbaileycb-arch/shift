@@ -1,0 +1,32 @@
+# Tests
+## Test 1 - Pre-Flight scanner loads [sanity]
+Viewport: desktop
+Description: Verifies the SHIFT Pre-Flight scanner loads with its core content.
+Steps:
+1. Navigate to the app
+2. Wait for the interface to load
+3. Confirm the Pre-Flight heading, the Launch readiness scanner tagline, and the Run Local Scan button are visible
+Expected: The scanner loads without frontend errors and shows the scan form with title, description, and configuration fields.
+## Test 2 - Local sample scan produces a report
+Viewport: desktop
+Description: Verifies the free local scan analyzes the built-in Android sample and renders a scored report.
+Steps:
+1. Navigate to the app
+2. Select Load Android sample
+3. Select Run Local Scan (free) and wait for the report
+Expected: An audit report section appears with three score cards (Safety, Legal, Marketing), tabbed findings including at least one high-severity finding, and a disclaimer banner. No sign-in is required.
+## Test 3 - Empty local scan is handled safely
+Viewport: mobile
+Description: Verifies running a local scan with no input renders guidance instead of crashing.
+Steps:
+1. Navigate to the app on mobile
+2. Leave all fields empty
+3. Select Run Local Scan (free)
+Expected: A report renders with informational findings noting missing input, the layout remains usable, and no errors appear.
+## Test 4 - Credit packs are listed
+Viewport: desktop
+Description: Verifies the billing section shows credit packs and an honest payment status without requiring sign-in.
+Steps:
+1. Navigate to the app
+2. Scroll to the Scan credits and billing section
+Expected: Three credit packs are listed with prices ($1.50, $5.00, $9.00). If payments are not enabled, the buy buttons are disabled and a note explains free credits still work. No secrets or errors are shown.
